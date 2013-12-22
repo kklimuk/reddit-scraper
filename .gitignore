@@ -1,0 +1,4 @@
+*.pyc
+reddit.db
+downloads/
+env/
