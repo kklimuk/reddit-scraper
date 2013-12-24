@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+</head>
+<body>
+	<style type="text/css">
+		img, iframe {
+			width: 100%;
+			display: block;
+			margin-top: 10px;
+		}
+
+		iframe {
+			height: 300px;
+		}
+
+		a {
+			font-size: 20px;
+			font-family: Helvetica, Arial, sans-serif;
+			color: #333;
+			text-decoration: none;
+		}
+
+		a:hover {
+			color: #333;
+		}
+
+		ul {
+			width: 400px;
+			padding: 0;
+		}
+
+		li {
+			padding: 15px 15px;
+			margin-bottom: 15px;
+
+			border: 1px solid #E5E5E5;
+			background-color: #F0F0F0;
+
+			list-style: none;
+		}
+
+	</style>
+	<ul>
+		{% for item in collection %}
+			{% if item['link'] %}
+		<li>
+			<a href="{{item['link']}}" target="_blank">
+				{{ loop.index }}. {{item['title']}}
+			{% if '.jpg' in item['link'] or '.jpeg' in item['link'] or '.gif' in item['link'] %}
+				<img src="{{item['link']}}" alt="{{item['title']}}">
+			{% elif item['embed'] %}
+				<iframe type="text/html" src="{{ item['embed'] }}" frameborder="0"></iframe>
+			{% endif %}
+			</a>
+		</li>
+			{% endif %}
+		{% endfor %}
+	</ul>
+</body>
+</html>

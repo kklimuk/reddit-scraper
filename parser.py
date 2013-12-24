@@ -36,7 +36,7 @@ def get_data_from_html_entry(entry):
     return ({
         "reddit_id": filter(lambda x: 'id-' in x, entry['class'])[0][3:],
         "title": title.string,
-        "entry": title['href'],
+        "link": title['href'],
         "subreddit": subreddit.string if subreddit else False,
         "thumbnail": thumbnail[0]['src'] if len(thumbnail) > 0 else False
     }, {
