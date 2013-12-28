@@ -6,6 +6,9 @@ from jinja2 import Template
 from urlparse import urlparse, parse_qs
 from bs4 import BeautifulSoup
 from time import time
+from apscheduler.scheduler import Scheduler
+
+sched = Scheduler()
 
 def get_imgur_images(link):
     def process_item(item):
@@ -29,7 +32,7 @@ def process(item):
         item['link'] = 'http://reddit.com%s' % item['link']
     return item
 
-
+@sched.interval_schedule(hours=24)
 def main():
     db = dataset.connect('sqlite:///reddit.db')
     if not os.path.exists('./deploy'):
@@ -64,6 +67,7 @@ def main():
             'Authorization': '9f9fa431c64a86da8324bb370d05377bbf49dbf9'
         })
 
-
 if __name__ == '__main__':
     main()
+    sched.configure(standalone=True)
+    sched.start()
