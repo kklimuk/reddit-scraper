@@ -1,5 +1,7 @@
 *.pyc
 reddit.db
+thumbnails.zip
 downloads/
 env/
 deploy/
+data-processing.sql

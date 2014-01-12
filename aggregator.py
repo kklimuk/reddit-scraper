@@ -63,7 +63,7 @@ def main():
                                collections=collections).encode('utf-8')
         f = open('./deploy/' + str(int(time())) + '.html', 'w')
         f.write(html)
-        requests.post('http://reddit-news-agency.herokuapp.com/', data=html, headers={
+        requests.post('http://reddit-snews-agency.herokuapp.com/', data=html, headers={
             'Authorization': '9f9fa431c64a86da8324bb370d05377bbf49dbf9'
         })
 
