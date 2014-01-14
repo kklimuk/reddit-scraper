@@ -9,13 +9,11 @@ from datetime import datetime
 def setup_db():
     queries = {
         "has_tables": 'SELECT EXISTS(SELECT * FROM information_schema.tables WHERE table_name=\'entries\');',
-        "create_entries": """
-        CREATE TABLE entries (
+        "create_entries": """CREATE TABLE entries (
             id SERIAL NOT NULL, reddit_id TEXT, title TEXT, link TEXT, thumbnail TEXT, subreddit TEXT,
             PRIMARY KEY (id)
         );""",
-        "create_statuses": """
-        CREATE TABLE statuses (
+        "create_statuses": """CREATE TABLE statuses (
             id SERIAL NOT NULL, downvotes INTEGER, comments INTEGER, mined_from TEXT,
             observed TIMESTAMP, rank INTEGER, upvotes INTEGER, eid INTEGER,
             PRIMARY KEY (id), FOREIGN KEY (eid) REFERENCES entries(id)
@@ -25,7 +23,7 @@ def setup_db():
         """
     }
 
-    db = dataset.connect('postgresql://localhost:5432/reddit')
+    db = dataset.connect('postgresql://admin:onelightmessiah@localhost:5432/reddit')
     for item in db.query(queries['has_tables']):
         if not item['exists']:
             db.query(queries['create_entries'])

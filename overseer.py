@@ -1,5 +1,6 @@
 import thread
 import atexit
+
 from time import sleep
 from parser import mine, setup_db
 
