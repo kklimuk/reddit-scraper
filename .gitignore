@@ -5,3 +5,4 @@ downloads/
 env/
 deploy/
 data-processing.sql
+.DS_Store
