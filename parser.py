@@ -8,7 +8,7 @@ from datetime import datetime
 
 def setup_db():
     queries = {
-        "has_tables": 'SELECT EXISTS(SELECT * FROM information_schema.tables WHERE table_name=\'entries\');',
+        "has_tables": 'SELECT EXISTS(SELECT * FROM information_schema.tables WHERE table_name=\'entries\') as exists;',
         "create_entries": """CREATE TABLE entries (
             id SERIAL NOT NULL, reddit_id TEXT, title TEXT, link TEXT, thumbnail TEXT, subreddit TEXT,
             PRIMARY KEY (id)
@@ -23,7 +23,7 @@ def setup_db():
         """
     }
 
-    db = dataset.connect('postgresql://admin:onelightmessiah@localhost:5432/reddit')
+    db = dataset.connect('postgresql://localhost:5432/reddit')
     for item in db.query(queries['has_tables']):
         if not item['exists']:
             db.query(queries['create_entries'])
@@ -79,7 +79,7 @@ def mine(mined_from=None, entry_count=1000, sleep_total=600):
     while True:
         last_id = "";
         start_time = time()
-        for count in xrange(0, 1000, 100):
+        for count in xrange(0, entry_count, 100):
             data = get_dataset_from_document(get_document_from_remote(count, last_id))
             for i, (entry, status) in enumerate(data):
                 if i == len(data) - 1:
