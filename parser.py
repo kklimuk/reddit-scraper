@@ -85,7 +85,6 @@ def mine(db, mined_from=None, entry_count=200, sleep_total=600):
     last_id = ""
     for count in xrange(0, entry_count, entry_count / 10):
         data = filter(filter_domains, get_dataset_from_document(get_document_from_remote(count, last_id, entry_count / 10)))
-        print len(data)
 
         for i, entry in enumerate(data):
             if i == len(data) - 1:
@@ -141,9 +140,7 @@ if __name__ == "__main__":
             thread = Thread(target=mine, args=(db,), kwargs={ "mined_from": SUBREDDITS[x] })
             thread.start()
             threads.append(thread)
-            break
 
         for thread in threads:
             thread.join()
         threads = []
-        break
