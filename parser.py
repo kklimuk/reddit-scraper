@@ -100,6 +100,9 @@ def mine(db, mined_from=None, entry_count=200, sleep_total=600):
                     continue
 
                 db['entries'].insert(entry)
+            else:
+                logging.info('Skipped entries %d-%d in %s' % (count, count + (entry_count / 10) - 1, mined_from))
+                break
 
             sleep(0.05)
 
@@ -130,7 +133,7 @@ def setup_db():
     return db
 
 
-if __name__ == "__main__":
+def main():
     threads = []
     db = setup_db()
     for index in xrange(0, len(SUBREDDITS), 4):
@@ -144,3 +147,11 @@ if __name__ == "__main__":
         for thread in threads:
             thread.join()
         threads = []
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception, e:
+        logging.error(e)
+
