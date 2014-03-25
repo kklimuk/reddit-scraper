@@ -11,13 +11,13 @@ from time import sleep
 
 
 INVISIBLE_ELEMENTS = set(['style', 'script', '[document]', 'head', 'title'])
-PROHIBITED_DOMAINS = ['instagram', 'flickr', 'photobucket', 'memebase', '9gag', 'failblog', 'quickmeme', 'youtube', 'vimeo']
+PROHIBITED_DOMAINS = ['imgur','instagram', 'flickr', 'photobucket', 'memebase', '9gag', 'failblog', 'quickmeme', 'youtube', 'vimeo']
 SUBREDDITS = [
-                'worldnews','technology','science','music','movies','books','television',
-                'sports', 'politics','todayilearned','mildlyinteresting','android','celebs',
+                'technology','mildlyinteresting','science','music','movies','books','television',
+                'sports', 'politics','todayilearned','worldnews','android','celebs',
                 'oddlysatisfying','nottheonion','books','trees','marijuanaenthusiasts','diablo',
                 'edmproduction','philosophy','programming','lifehacks','freebies','doctorwho','dataisbeautiful',
-                'futurology','linux','canada','libertarian','republican','democrats','republican', 'socialism'
+                'futurology','linux','canada','libertarian','democrats','republican', 'socialism'
             ]
 
 
@@ -25,10 +25,10 @@ def mine(db, mined_from=None, entry_count=200, sleep_total=600):
     logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',
                         filename='parser.log',level=logging.DEBUG)
 
-    def get_document_from_remote(count, after):
+    def get_document_from_remote(count, after, limit):
         url = 'http://www.reddit.com' + ('/r/%s/top' % mined_from if mined_from is not None else '')
         return BeautifulSoup(requests.get(url, params={
-            "limit": 100,
+            "limit": limit,
             "count": count,
             "after": after,
             "sort": "top",
@@ -83,8 +83,9 @@ def mine(db, mined_from=None, entry_count=200, sleep_total=600):
         return True
 
     last_id = ""
-    for count in xrange(0, entry_count, 100):
-        data = filter(filter_domains, get_dataset_from_document(get_document_from_remote(count, last_id)))
+    for count in xrange(0, entry_count, entry_count / 10):
+        data = filter(filter_domains, get_dataset_from_document(get_document_from_remote(count, last_id, entry_count / 10)))
+        print len(data)
 
         for i, entry in enumerate(data):
             if i == len(data) - 1:
@@ -103,7 +104,7 @@ def mine(db, mined_from=None, entry_count=200, sleep_total=600):
 
             sleep(0.05)
 
-        logging.info('Finished mining entries %d-%d in %s' % (count, count + 100, mined_from))
+        logging.info('Finished mining entries %d-%d in %s' % (count, count + (entry_count / 10) - 1, mined_from))
 
 
 def setup_db():
@@ -133,10 +134,16 @@ def setup_db():
 if __name__ == "__main__":
     threads = []
     db = setup_db()
-    for subreddit in SUBREDDITS:
-        thread = Thread(target=mine, args=(db,), kwargs={ "mined_from": subreddit })
-        thread.start()
-        threads.append(thread)
+    for index in xrange(0, len(SUBREDDITS), 4):
+        for x in xrange(index, index + 4):
+            if x >= len(SUBREDDITS):
+                break
+            thread = Thread(target=mine, args=(db,), kwargs={ "mined_from": SUBREDDITS[x] })
+            thread.start()
+            threads.append(thread)
+            break
 
-    for thread in threads:
-        thread.join()
+        for thread in threads:
+            thread.join()
+        threads = []
+        break
