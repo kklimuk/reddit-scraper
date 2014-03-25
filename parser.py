@@ -86,6 +86,7 @@ def mine(db, mined_from=None, entry_count=200, sleep_total=600):
     for count in xrange(0, entry_count, entry_count / 10):
         data = filter(filter_domains, get_dataset_from_document(get_document_from_remote(count, last_id, entry_count / 10)))
 
+        skipped = False
         for i, entry in enumerate(data):
             if i == len(data) - 1:
                 last_id = entry['reddit_id']
@@ -101,12 +102,14 @@ def mine(db, mined_from=None, entry_count=200, sleep_total=600):
 
                 db['entries'].insert(entry)
             else:
+                skipped = True
                 logging.info('Skipped entries %d-%d in %s' % (count, count + (entry_count / 10) - 1, mined_from))
                 break
 
             sleep(0.05)
 
-        logging.info('Finished mining entries %d-%d in %s' % (count, count + (entry_count / 10) - 1, mined_from))
+        if not skipped:
+            logging.info('Finished mining entries %d-%d in %s' % (count, count + (entry_count / 10) - 1, mined_from))
 
 
 def setup_db():
